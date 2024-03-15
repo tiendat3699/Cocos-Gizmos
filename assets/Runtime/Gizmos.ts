@@ -1,20 +1,4 @@
-import {
-    _decorator,
-    Component,
-    director,
-    Mat4,
-    Material,
-    primitives,
-    renderer,
-    utils,
-    Vec3,
-    misc,
-    Color,
-    Node,
-    gfx,
-    game,
-    Game,
-} from 'cc';
+import { _decorator, Component, director, Mat4, Material, primitives, renderer, utils, Vec3, misc, Color } from 'cc';
 import { EDITOR } from 'cc/env';
 const { ccclass, property, executeInEditMode, executionOrder } = _decorator;
 
