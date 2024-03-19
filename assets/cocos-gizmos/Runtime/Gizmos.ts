@@ -142,7 +142,7 @@ export default class Gizmos extends Component {
         const positions: number[] = [];
         const colors: number[] = [];
         const circle = primitives.circle();
-        circle.boundingRadius = radius;
+        primitives.scale(circle, { x: radius, y: radius, z: radius });
 
         for (let i = 0; i < circle.positions.length; i++) {
             colors.push(color.r, color.g, color.b, color.a);
