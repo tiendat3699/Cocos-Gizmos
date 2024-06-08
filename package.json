@@ -1,0 +1,17 @@
+{
+  "name": "Cocos-Gizmos",
+  "uuid": "82480c34-e791-4544-ac0c-2bd78b395de5",
+  "creator": {
+    "version": "3.8.2"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "prettier": "^3.2.5",
+    "pretty-quick": "^4.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
+}
