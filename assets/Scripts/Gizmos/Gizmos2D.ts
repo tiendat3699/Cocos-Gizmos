@@ -39,7 +39,7 @@ class GizmosDebugDraw extends Component {
     private _useLocalPosition: boolean = false;
     private _layer: Layers.Enum = Gizmos2D.DEFAULT_LAYER;
 
-    protected update(dt: number): void {
+    protected lateUpdate(dt: number): void {
         this._renderers.forEach((renderer) => {
             renderer.clear();
             renderer.draw();
@@ -58,6 +58,7 @@ class GizmosDebugDraw extends Component {
         g.fillColor = color;
         g.node.layer = this.node.layer;
         g.node.parent = this.node;
+        g.node.setPosition(Vec3.ZERO);
         const renderer = new GizmosRenderer(g);
         return renderer;
     }
@@ -287,6 +288,7 @@ export default class Gizmos2D {
             debugNode.node.layer = this.DEFAULT_LAYER;
             debugNode.node.hideFlags |= CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
             debugNode.node.parent = node;
+            debugNode.node.setPosition(Vec3.ZERO);
         }
         return debugNode;
     }

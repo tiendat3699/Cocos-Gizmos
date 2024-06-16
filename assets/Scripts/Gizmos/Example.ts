@@ -1,5 +1,5 @@
 import { _decorator, Color, Component, Layers, Node, Vec2, Vec3 } from 'cc';
-import { registerGizmos } from './Decorator';
+import registerGizmos from './Decorator';
 import Gizmos2D from './Gizmos2D';
 import Gizmos3D from './Gizmos3D';
 

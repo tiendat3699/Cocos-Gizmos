@@ -45,7 +45,7 @@ class GizmosDebugDraw extends Component {
         }
     }
 
-    protected update(dt: number): void {
+    protected lateUpdate(dt: number): void {
         this._color = Gizmos3D.DEFAULT_COLOR;
         this._useLocalPosition = false;
     }
