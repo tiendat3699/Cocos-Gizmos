@@ -8,11 +8,16 @@ import {
     geometry,
     GeometryRenderer,
     gfx,
+    Label,
     Layers,
     Mat4,
     Material,
     Node,
+    RenderRoot2D,
+    Sprite,
+    SpriteFrame,
     toRadian,
+    Vec2,
     Vec3,
 } from 'cc';
 import { cce } from './Define';
@@ -26,14 +31,23 @@ class GizmosDebugDraw extends Component {
     private _renderer: GeometryRenderer = null;
     private _depthTest: boolean = true;
     private _useLocalPosition: boolean = false;
-    private _components: (new () => Component)[] = [];
+    private _camera: Node;
+    private _labelMap: Map<string, Label> = new Map();
+    private _spriteMap: Map<string, Sprite> = new Map();
+    private _root2D: Node;
+    private _draw2DCalls: (() => void)[] = [];
 
     protected onLoad(): void {
+        this._root2D = new Node('Root2D');
+        this._root2D.addComponent(RenderRoot2D);
+        this._root2D.setParent(this.node);
         if (cce) {
+            this._camera = cce.Camera._camera.camera.node;
             cce.Camera._camera.camera.initGeometryRenderer();
             this._renderer = cce.Camera._camera.camera.geometryRenderer;
         } else {
             const camera = director.getScene().getComponentInChildren(Camera).camera;
+            this._camera = camera.node;
             camera.initGeometryRenderer();
             this._renderer = camera.geometryRenderer;
         }
@@ -46,6 +60,19 @@ class GizmosDebugDraw extends Component {
     }
 
     protected lateUpdate(dt: number): void {
+        this._labelMap.forEach((label) => {
+            label.string = '';
+            label.node.setRotationFromEuler(this._camera.eulerAngles);
+        });
+
+        this._spriteMap.forEach((sprite) => {
+            sprite.spriteFrame = null;
+            sprite.node.setRotationFromEuler(this._camera.eulerAngles);
+        });
+
+        this._draw2DCalls.forEach((drawCall) => drawCall());
+
+        this._draw2DCalls = [];
         this._color = Gizmos3D.DEFAULT_COLOR;
         this._useLocalPosition = false;
     }
@@ -58,10 +85,6 @@ class GizmosDebugDraw extends Component {
 
     public setDepthTest(value: boolean) {
         this._depthTest = value;
-    }
-
-    public registerDrawGizmos(component: new () => Component) {
-        this._components.push(component);
     }
 
     public setColor(color: Color) {
@@ -91,6 +114,57 @@ class GizmosDebugDraw extends Component {
         result.multiply(transform);
 
         return result;
+    }
+
+    private getSprite(id: string): Sprite {
+        let sprite = this._spriteMap.get(id);
+        if (!sprite) {
+            sprite = new Node('spriteID: ' + id).addComponent(Sprite);
+            this._spriteMap.set(id, sprite);
+            sprite.node.setParent(this._root2D);
+        }
+        return sprite;
+    }
+
+    private getLabel(id: string): Label {
+        let label = this._labelMap.get(id);
+        if (!label) {
+            label = new Node('LabelID: ' + id).addComponent(Label);
+            this._labelMap.set(id, label);
+            label.node.setParent(this._root2D);
+        }
+        return label;
+    }
+
+    public drawSprite(id: string, spriteFrame: SpriteFrame, position: Vec3, scale: Vec2, color: Color = Color.WHITE) {
+        const sprite = this.getSprite(id);
+        this._draw2DCalls.push(() => {
+            sprite.spriteFrame = spriteFrame;
+            sprite.color = color;
+            sprite.node.setScale(new Vec3(scale.x, scale.y));
+            if (this._useLocalPosition) {
+                sprite.node.setPosition(position);
+            } else {
+                sprite.node.setWorldPosition(position);
+            }
+        });
+    }
+
+    public drawLabel(id: string, text: string, position: Vec3, fontSize: number = 40, scale: number = 1) {
+        const color = this._color.clone();
+        const label = this.getLabel(id);
+        this._draw2DCalls.push(() => {
+            label.string = text;
+            label.color = color;
+            label.fontSize = fontSize;
+            label.lineHeight = fontSize;
+            label.node.setScale(new Vec3(scale, scale));
+            if (this._useLocalPosition) {
+                label.node.setPosition(position);
+            } else {
+                label.node.setWorldPosition(position);
+            }
+        });
     }
 
     public drawLine(point1: Vec3, point2: Vec3) {
@@ -389,6 +463,28 @@ export default class Gizmos3D {
 
     static endLocalPosition(node: Node) {
         this.getDebugNode(node)?.setUseLocalPosition(false);
+    }
+
+    public static drawSprite(
+        node: Node,
+        id: string,
+        spriteFrame: SpriteFrame,
+        position: Vec3,
+        scale: Vec2 = Vec2.ONE,
+        color: Color = Color.WHITE,
+    ) {
+        this.getDebugNode(node).drawSprite(id, spriteFrame, position, scale, color);
+    }
+
+    public static drawLabel(
+        node: Node,
+        id: string,
+        text: string,
+        position: Vec3,
+        fontSize: number = 15,
+        scale: number = 1,
+    ) {
+        this.getDebugNode(node)?.drawLabel(id, text, position, fontSize, scale);
     }
 
     public static drawLine(node: Node, point1: Vec3, point2: Vec3) {

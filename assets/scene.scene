@@ -11,7 +11,7 @@
   },
   {
     "__type__": "cc.Scene",
-    "_name": "Scene",
+    "_name": "scene",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -24,10 +24,14 @@
       },
       {
         "__id__": 7
+      },
+      {
+        "__id__": 10
       }
     ],
     "_active": true,
     "_components": [],
+    "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
@@ -57,7 +61,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 9
+      "__id__": 12
     },
     "_id": "4919d142-4fd3-4ff2-979a-9bfd54c1066e"
   },
@@ -250,7 +254,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Node",
+    "_name": "Capsule",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -291,6 +295,106 @@
       "y": 0,
       "z": 0
     },
+    "_id": "802jySqy1BTZS++i3OERvt"
+  },
+  {
+    "__type__": "cc.MeshRenderer",
+    "_name": "Capsule<ModelComponent>",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 7
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_materials": [
+      {
+        "__uuid__": "620b6bf3-0369-4560-837f-2a2c00b73c26",
+        "__expectedType__": "cc.Material"
+      }
+    ],
+    "_visFlags": 0,
+    "bakeSettings": {
+      "__id__": 9
+    },
+    "_mesh": {
+      "__uuid__": "1263d74c-8167-4928-91a6-4e2672411f47@801ec",
+      "__expectedType__": "cc.Mesh"
+    },
+    "_shadowCastingMode": 0,
+    "_shadowReceivingMode": 1,
+    "_shadowBias": 0,
+    "_shadowNormalBias": 0,
+    "_reflectionProbeId": -1,
+    "_reflectionProbeBlendId": -1,
+    "_reflectionProbeBlendWeight": 0,
+    "_enabledGlobalStandardSkinObject": false,
+    "_enableMorph": true,
+    "_id": "53w1Fce1lD3oGdE9i2M+K2"
+  },
+  {
+    "__type__": "cc.ModelBakeSettings",
+    "texture": null,
+    "uvParam": {
+      "__type__": "cc.Vec4",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 0
+    },
+    "_bakeable": false,
+    "_castShadow": false,
+    "_receiveShadow": false,
+    "_recieveShadow": false,
+    "_lightmapSize": 64,
+    "_useLightProbe": false,
+    "_bakeToLightProbe": true,
+    "_reflectionProbeType": 0,
+    "_bakeToReflectionProbe": true
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "Node",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "_parent": {
+      "__id__": 1
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 11
+      }
+    ],
+    "_prefab": null,
+    "_lpos": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_lrot": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_lscale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_mobility": 0,
+    "_layer": 1073741824,
+    "_euler": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
     "_id": "72dKA8RNBB/aa7sLMLgI/o"
   },
   {
@@ -299,37 +403,41 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 7
+      "__id__": 10
     },
     "_enabled": true,
     "__prefab": null,
+    "spriteFrame": {
+      "__uuid__": "45828f25-b50d-4c52-a591-e19491a62b8c@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
     "_id": "a7Uvm9lJBHLovITgig21G7"
   },
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 10
-    },
-    "shadows": {
-      "__id__": 11
-    },
-    "_skybox": {
-      "__id__": 12
-    },
-    "fog": {
       "__id__": 13
     },
-    "octree": {
+    "shadows": {
       "__id__": 14
     },
-    "skin": {
+    "_skybox": {
       "__id__": 15
     },
-    "lightProbeInfo": {
+    "fog": {
       "__id__": 16
     },
-    "postSettings": {
+    "octree": {
       "__id__": 17
+    },
+    "skin": {
+      "__id__": 18
+    },
+    "lightProbeInfo": {
+      "__id__": 19
+    },
+    "postSettings": {
+      "__id__": 20
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false

@@ -20,9 +20,11 @@ if (Editor) {
         for (let i = 0; i < w._componentsGizmos.length; i++) {
             const comps: Component[] = root.getComponentsInChildren(w._componentsGizmos[i]);
             comps.forEach((comp) => {
-                comp.onDrawGizmos?.();
-                if (selectedList.includes(comp.node.uuid)) {
-                    comp.onDrawGizmosSelected?.();
+                if (comp.node.active && comp.enabled) {
+                    comp.onDrawGizmos?.();
+                    if (selectedList.includes(comp.node.uuid)) {
+                        comp.onDrawGizmosSelected?.();
+                    }
                 }
             });
         }
