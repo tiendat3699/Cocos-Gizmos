@@ -35,7 +35,7 @@ class GizmosDebugDraw extends Component {
     private _labelMap: Map<string, Label> = new Map();
     private _spriteMap: Map<string, Sprite> = new Map();
     private _root2D: Node;
-    private _draw2DCalls: (() => void)[] = [];
+    private _drawCalls2D: (() => void)[] = [];
 
     protected onLoad(): void {
         this._root2D = new Node('Root2D');
@@ -70,9 +70,9 @@ class GizmosDebugDraw extends Component {
             sprite.node.setRotationFromEuler(this._camera.eulerAngles);
         });
 
-        this._draw2DCalls.forEach((drawCall) => drawCall());
+        this._drawCalls2D.forEach((drawCall) => drawCall());
 
-        this._draw2DCalls = [];
+        this._drawCalls2D = [];
         this._color = Gizmos3D.DEFAULT_COLOR;
         this._useLocalPosition = false;
     }
@@ -138,7 +138,7 @@ class GizmosDebugDraw extends Component {
 
     public drawSprite(id: string, spriteFrame: SpriteFrame, position: Vec3, scale: Vec2, color: Color = Color.WHITE) {
         const sprite = this.getSprite(id);
-        this._draw2DCalls.push(() => {
+        this._drawCalls2D.push(() => {
             sprite.spriteFrame = spriteFrame;
             sprite.color = color;
             sprite.node.setScale(new Vec3(scale.x, scale.y));
@@ -153,7 +153,7 @@ class GizmosDebugDraw extends Component {
     public drawLabel(id: string, text: string, position: Vec3, fontSize: number = 40, scale: number = 1) {
         const color = this._color.clone();
         const label = this.getLabel(id);
-        this._draw2DCalls.push(() => {
+        this._drawCalls2D.push(() => {
             label.string = text;
             label.color = color;
             label.fontSize = fontSize;
@@ -444,7 +444,7 @@ export default class Gizmos3D {
     private static getDebugNode(node: Node) {
         let debugNode = node.getComponentInChildren(GizmosDebugDraw);
         if (!debugNode) {
-            debugNode = new Node('DEBUG_DRAW_NODE').addComponent(GizmosDebugDraw);
+            debugNode = new Node('DEBUG_DRAW3D_NODE').addComponent(GizmosDebugDraw);
             debugNode.node.layer = this.DEFAULT_LAYER;
             debugNode.node.hideFlags |= CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
             debugNode.node.parent = node;

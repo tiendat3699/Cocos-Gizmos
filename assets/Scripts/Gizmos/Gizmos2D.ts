@@ -1,4 +1,19 @@
-import { _decorator, CCObject, Color, Component, Graphics, IVec2Like, Layers, Node, toRadian, Vec3 } from 'cc';
+import {
+    _decorator,
+    CCObject,
+    Color,
+    Component,
+    Graphics,
+    IVec2Like,
+    Label,
+    Layers,
+    Node,
+    Sprite,
+    SpriteFrame,
+    toRadian,
+    Vec2,
+    Vec3,
+} from 'cc';
 
 const { ccclass, executeInEditMode } = _decorator;
 
@@ -9,6 +24,12 @@ class GizmosRenderer {
     public addDrawCall(drawCall: (graphic: Graphics) => void) {
         this._drawCalls.push(drawCall);
     }
+
+    public addDrawTextCall(labelID: string, drawCall: () => void) {
+        this._drawCalls.push(() => drawCall());
+    }
+
+    public addDrawSpriteCall(spriteID: string, drawCall: (sprite: Sprite) => void) {}
 
     constructor(graphic: Graphics) {
         this._graphic = graphic;
@@ -35,15 +56,32 @@ class GizmosRenderer {
 @executeInEditMode
 class GizmosDebugDraw extends Component {
     private _renderers: Map<string, GizmosRenderer> = new Map();
+    private _labelMap: Map<string, Label> = new Map();
+    private _spriteMap: Map<string, Sprite> = new Map();
     private _color: Color = Gizmos2D.DEFAULT_COLOR;
     private _useLocalPosition: boolean = false;
     private _layer: Layers.Enum = Gizmos2D.DEFAULT_LAYER;
+    private _drawCallsNoneGeometry: (() => void)[] = [];
 
     protected lateUpdate(dt: number): void {
+        this._labelMap.forEach((label) => {
+            label.string = '';
+        });
+
+        this._spriteMap.forEach((sprite) => {
+            sprite.spriteFrame = null;
+        });
+
         this._renderers.forEach((renderer) => {
             renderer.clear();
             renderer.draw();
         });
+
+        this._drawCallsNoneGeometry.forEach((drawCall) => {
+            drawCall();
+        });
+
+        this._drawCallsNoneGeometry = [];
 
         this._color = Gizmos2D.DEFAULT_COLOR;
         this._useLocalPosition = false;
@@ -79,6 +117,30 @@ class GizmosDebugDraw extends Component {
         return local;
     }
 
+    private getSprite(id: string) {
+        let sprite = this._spriteMap.get(id);
+        if (!sprite) {
+            sprite = new Node('spriteID: ' + id).addComponent(Sprite);
+            this._spriteMap.set(id, sprite);
+            sprite.node.layer = this.node.layer;
+            sprite.node.setParent(this.node);
+        }
+
+        return sprite;
+    }
+
+    private getLabel(id: string): Label {
+        let label = this._labelMap.get(id);
+        if (!label) {
+            label = new Node('labelID: ' + id).addComponent(Label);
+            this._labelMap.set(id, label);
+            label.node.layer = this.node.layer;
+            label.node.setParent(this.node);
+        }
+
+        return label;
+    }
+
     public setColor(color: Color) {
         this._color = color;
     }
@@ -89,6 +151,47 @@ class GizmosDebugDraw extends Component {
 
     public setLayer(layer: Layers.Enum) {
         this._layer = layer;
+    }
+
+    public drawSprite(
+        id: string,
+        spriteFrame: SpriteFrame,
+        position: IVec2Like,
+        scale: Vec2 = Vec2.ONE,
+        color: Color = Color.WHITE,
+    ) {
+        const sprite = this.getSprite(id);
+        sprite.node.layer = this._layer;
+        this._drawCallsNoneGeometry.push(() => {
+            sprite.color = color;
+            sprite.spriteFrame = spriteFrame;
+            sprite.node.setScale(new Vec3(scale.x, scale.y));
+            const p = new Vec3(position.x, position.y);
+            if (this._useLocalPosition) {
+                sprite.node.setPosition(p);
+            } else {
+                sprite.node.setWorldPosition(p);
+            }
+        });
+    }
+
+    public drawLabel(id: string, text: string, position: IVec2Like, fontSize: number = 40, scale: Vec2 = Vec2.ONE) {
+        const color = this._color.clone();
+        const label = this.getLabel(id);
+        label.node.layer = this._layer;
+        this._drawCallsNoneGeometry.push(() => {
+            label.color = color;
+            label.fontSize = fontSize;
+            label.lineHeight = fontSize;
+            label.string = text;
+            label.node.setScale(new Vec3(scale.x, scale.y));
+            const p = new Vec3(position.x, position.y);
+            if (this._useLocalPosition) {
+                label.node.setPosition(p);
+            } else {
+                label.node.setWorldPosition(p);
+            }
+        });
     }
 
     public drawLine(point1: IVec2Like, point2: IVec2Like) {
@@ -284,7 +387,7 @@ export default class Gizmos2D {
     private static getDebugNode(node: Node) {
         let debugNode = node.getComponentInChildren(GizmosDebugDraw);
         if (!debugNode) {
-            debugNode = new Node('DEBUG_DRAW_NODE').addComponent(GizmosDebugDraw);
+            debugNode = new Node('DEBUG_DRAW2D_NODE').addComponent(GizmosDebugDraw);
             debugNode.node.layer = this.DEFAULT_LAYER;
             debugNode.node.hideFlags |= CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
             debugNode.node.parent = node;
@@ -303,6 +406,28 @@ export default class Gizmos2D {
 
     public static endLocalPosition(node: Node) {
         this.getDebugNode(node).setUseLocalPosition(false);
+    }
+
+    public static drawSprite(
+        node: Node,
+        id: string,
+        spriteFrame: SpriteFrame,
+        position: IVec2Like,
+        scale: Vec2 = Vec2.ONE,
+        color: Color = Color.WHITE,
+    ) {
+        this.getDebugNode(node).drawSprite(id, spriteFrame, position, scale, color);
+    }
+
+    public static drawLabel(
+        node: Node,
+        id: string,
+        text: string,
+        point: IVec2Like,
+        fontSize: number = 40,
+        scale: Vec2 = Vec2.ONE,
+    ) {
+        this.getDebugNode(node).drawLabel(id, text, point, fontSize, scale);
     }
 
     public static beginLayer(node: Node, layer: Layers.Enum) {

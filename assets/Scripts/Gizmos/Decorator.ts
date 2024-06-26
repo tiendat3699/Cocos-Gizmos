@@ -1,4 +1,4 @@
-import { Component, director, Director, Node } from 'cc';
+import { Component } from 'cc';
 
 export default function registerGizmos(constructor: new () => Component) {
     const w = window as any;
