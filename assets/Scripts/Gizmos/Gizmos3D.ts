@@ -422,22 +422,6 @@ class GizmosDebugDraw extends Component {
 }
 
 export default class Gizmos3D {
-    private static _mat: Material;
-
-    public static get DEFAULT_MAT() {
-        if (!this._mat) {
-            this._mat = new Material();
-            this._mat.initialize({
-                effectName: 'builtin-unlit',
-                defines: { USE_VERTEX_COLOR: true },
-                states: { primitive: gfx.PrimitiveMode.LINE_LOOP },
-            });
-            this._mat.passes.forEach((v) => v.tryCompile());
-        }
-
-        return this._mat;
-    }
-
     public static readonly DEFAULT_COLOR = Color.BLUE;
     public static readonly DEFAULT_LAYER = Layers.Enum.GIZMOS;
 
